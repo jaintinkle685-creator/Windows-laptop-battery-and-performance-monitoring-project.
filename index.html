@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Laptop Battery Usage Optimizer - live battery analytics and intelligent optimization dashboard">
+  <title>Laptop Battery Usage Optimizer</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="assets/logo.svg" alt="Laptop Battery Usage Optimizer logo">
+      <div><h1>Laptop Battery</h1><p>Usage Optimizer</p></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-page="overview"><span>⌂</span> Overview</button>
+      <button class="nav-item" data-page="analytics"><span>◫</span> Analytics</button>
+      <button class="nav-item" data-page="optimizer"><span>⚙</span> Smart Optimizer</button>
+      <button class="nav-item" data-page="power"><span>ϟ</span> Power Analysis</button>
+      <button class="nav-item" data-page="insights"><span>◈</span> Energy Insights</button>
+      <button class="nav-item" data-page="aoa"><span>⌘</span> AOA Project</button>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="live-dot"></span> Live monitoring
+      <small>Website edition • v3.0</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Laptop Battery Usage Optimizer</h2>
+        <p id="pageSubtitle">Real-time battery and system intelligence</p>
+      </div>
+      <div class="top-metrics">
+        <span>CPU <b id="topCpu">--%</b></span>
+        <span>RAM <b id="topRam">--%</b></span>
+        <span>Battery <b id="topBattery">--%</b></span>
+        <span class="online"><i></i> LIVE</span>
+      </div>
+    </header>
+
+    <section class="page active" id="page-overview">
+      <div class="hero-grid">
+        <article class="card battery-card">
+          <div class="card-title"><span>◈</span> BATTERY STATUS <em id="chargeStatus">Detecting…</em></div>
+          <div class="battery-main">
+            <div>
+              <div class="battery-number"><span id="batteryPercent">--</span><small>%</small></div>
+              <p class="muted"><span id="capacityWh">--</span> Wh estimated remaining</p>
+              <div class="progress"><i id="batteryProgress"></i></div>
+            </div>
+            <div class="battery-visual">
+              <div class="battery-body"><i id="batteryFill"></i><b>ϟ</b></div>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div><label>EST. RUNTIME</label><strong id="runtime">--</strong><small class="metric-note">based on rolling draw</small></div>
+            <div><label>POWER DRAW</label><strong id="powerDraw">-- W</strong><small class="metric-note">rolling 60-second average</small></div>
+            <div><label>SAMPLES</label><strong id="sampleCount">0</strong><small id="sampleInfo" class="metric-note">1 sample / second</small></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-title"><span>⌁</span> LIVE SYSTEM OVERVIEW</div>
+          <div class="system-grid">
+            <div class="mini-card"><label>CPU</label><strong id="cpu">--%</strong><canvas id="miniCpu"></canvas></div>
+            <div class="mini-card"><label>RAM</label><strong id="ram">--%</strong><canvas id="miniRam"></canvas></div>
+            <div class="mini-card"><label>GPU UTILIZATION</label><strong id="gpu">--%</strong><canvas id="miniGpu"></canvas></div>
+            <div class="mini-card"><label>GPU TEMPERATURE</label><strong id="temperature">--°C</strong><canvas id="miniTemp"></canvas></div>
+            <div class="mini-card"><label>POWER</label><strong id="power">-- W</strong><canvas id="miniPower"></canvas></div>
+            <div class="mini-card"><label>DISPLAY</label><strong id="displayRate">-- Hz</strong><canvas id="miniDisplay"></canvas></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card chart-card">
+        <div class="card-title"><span>▣</span> BATTERY LEVEL OVER TIME <div class="range" id="overviewRange">
+          <button data-window="60">1 min</button><button data-window="300">5 min</button><button class="selected" data-window="900">15 min</button><button data-window="1800">30 min</button><button data-window="3600">1 hour</button><button data-window="7200">2 hours</button>
+        </div></div>
+        <canvas id="batteryChart"></canvas>
+      </article>
+
+      <div class="two-col">
+        <article class="card">
+          <div class="card-title"><span>▤</span> TOP POWER CONSUMERS</div>
+          <div id="consumerList"></div>
+        </article>
+        <article class="card recommendation-card">
+          <div class="card-title"><span>✦</span> SMART RECOMMENDATION</div>
+          <h3 id="recommendTitle">Analyzing your system…</h3>
+          <p id="recommendText" class="muted">Live metrics are being evaluated.</p>
+          <div class="saving-box">Potential saving <b id="potentialSaving">--</b></div>
+          <button class="primary" id="applyRecommendation">APPLY SAFE PLAN</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="page-analytics">
+      <div class="stats">
+        <div class="card stat"><label>SESSION</label><b id="sessionTime">0m</b></div>
+        <div class="card stat"><label>AVERAGE POWER</label><b id="averagePower">-- W</b></div>
+        <div class="card stat"><label>LOWEST BATTERY</label><b id="lowestBattery">--%</b></div>
+        <div class="card stat"><label>LIVE SAMPLES</label><b id="analyticsSamples">0</b></div>
+      </div>
+      <div class="chart-grid">
+        <article class="card"><div class="card-title">BATTERY HISTORY <em>LIVE</em></div><canvas id="analyticsBattery"></canvas></article>
+        <article class="card"><div class="card-title">POWER DRAW HISTORY <em>LIVE</em></div><canvas id="analyticsPower"></canvas></article>
+        <article class="card"><div class="card-title">CPU USAGE HISTORY <em>LIVE</em></div><canvas id="analyticsCpu"></canvas></article>
+        <article class="card"><div class="card-title">RAM USAGE HISTORY <em>LIVE</em></div><canvas id="analyticsRam"></canvas></article>
+        <article class="card"><div class="card-title">TEMPERATURE HISTORY <em>LIVE</em></div><canvas id="analyticsTemp"></canvas></article>
+      </div>
+    </section>
+
+    <section class="page" id="page-optimizer">
+      <div class="optimizer-intro">
+        <div>
+          <div class="eyebrow"><span class="live-dot"></span> LIVE LAPTOP ANALYSIS</div>
+          <h2>Smart Optimizer</h2>
+          <p>See how your <b>actual Windows settings</b> affect battery efficiency. Change brightness or refresh rate on your laptop and this dashboard detects the change automatically.</p>
+        </div>
+        <div class="optimizer-how">
+          <span>1</span><b>Detect</b><i>→</i><span>2</span><b>Score</b><i>→</i><span>3</span><b>Recommend</b>
+        </div>
+      </div>
+
+      <div class="optimizer-grid">
+        <article class="card optimizer-score">
+          <div class="card-title"><span>◉</span> YOUR LIVE EFFICIENCY <em id="optimizerState">READY</em></div>
+          <div class="score-ring"><span id="optimizerScore">--</span><small>/100</small></div>
+          <h2 id="optimizerHeadline">Waiting for live data</h2>
+          <p class="muted">Higher score = better battery efficiency. The score uses your live power draw, CPU load, temperature, brightness and active refresh rate.</p>
+          <div class="optimizer-metrics">
+            <div><span>POWER DRAW</span><b id="optimizerDraw">-- W</b></div>
+            <div><span>EST. RUNTIME</span><b id="optimizerRuntime">--</b></div>
+            <div><span>POSSIBLE SAVING</span><b id="optimizerSaving">--</b></div>
+          </div>
+          <div class="live-display-box">
+            <div><span>BRIGHTNESS</span><b id="optimizerBrightness">--</b><small>Detected from Windows</small></div>
+            <div><span>REFRESH RATE</span><b id="optimizerRefreshRate">--</b><small>Active display mode</small></div>
+          </div>
+          <div class="live-source"><span class="live-dot"></span> Live mode is ON — settings are checked continuously</div>
+          <div id="displayChangeStatus" class="display-change-status">Waiting for live Windows changes…</div>
+          <button class="primary" id="optimizeButton">RECHECK LIVE SETTINGS</button>
+        </article>
+
+        <article class="card actions-card">
+          <div class="card-title"><span>✦</span> WHAT SHOULD YOU DO? <em>PRIORITY ORDER</em></div>
+          <p class="section-help">Actions are ranked from the biggest estimated battery benefit to the smallest. If nothing important needs changing, the list stays clear.</p>
+          <div id="optimizerActions" class="action-list"></div>
+        </article>
+      </div>
+
+      <article class="card what-if">
+        <div class="card-title"><span>◈</span> WHAT-IF SIMULATOR <em>SAFE TESTING</em></div>
+        <p class="section-help">Try different settings here to estimate their effect. <b>This simulator does not change Windows.</b> Your real settings are shown above.</p>
+        <div class="whatif-grid">
+          <div>
+            <div class="slider-line"><label>Brightness</label><input id="brightness" type="range" min="20" max="100" value="70"><b id="brightnessValue">70%</b></div>
+            <div class="slider-line"><label>Refresh Rate</label><select id="refreshRate" class="refresh-select" aria-label="Refresh rate">
+              <option value="60">60 Hz — Battery Saver</option>
+              <option value="144">144 Hz — Smooth</option>
+            </select></div>
+            <label class="toggle"><input id="backgroundApps" type="checkbox"> Reduce high-power background activity</label>
+            <div class="saving-box large">Estimated runtime improvement <b id="whatIfResult">--</b></div>
+          </div>
+          <div class="screen-wrap">
+            <div class="laptop-screen" id="screenPreview"><span>LAPTOP BATTERY<br>OPTIMIZER</span></div>
+            <p id="previewText" class="muted">The preview changes instantly with your selected settings.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="page" id="page-insights">
+      <div class="stats">
+        <div class="card stat"><label>ENERGY EFFICIENCY</label><b id="insightEfficiency">--%</b><small class="metric-note">estimated from live draw</small></div>
+        <div class="card stat"><label>BATTERY DRAIN RATE</label><b id="insightDrain">-- %/min</b><small class="metric-note">rolling 60-second rate</small></div>
+        <div class="card stat"><label>PROJECTED RUNTIME</label><b id="insightRuntime">--</b><small class="metric-note">based on current trend</small></div>
+        <div class="card stat"><label>SYSTEM LOAD</label><b id="insightLoad">--%</b><small class="metric-note">CPU + RAM activity</small></div>
+      </div>
+      <div class="chart-grid insights-grid">
+        <article class="card"><div class="card-title"><span>⌁</span> BATTERY DRAIN RATE <em>LIVE</em></div><canvas id="insightDrainChart"></canvas></article>
+        <article class="card"><div class="card-title"><span>ϟ</span> POWER EFFICIENCY <em>LIVE</em></div><canvas id="insightEfficiencyChart"></canvas></article>
+        <article class="card"><div class="card-title"><span>◫</span> CPU UTILIZATION <em>LIVE</em></div><canvas id="insightCpuChart"></canvas></article>
+        <article class="card"><div class="card-title"><span>▣</span> RAM UTILIZATION <em>LIVE</em></div><canvas id="insightRamChart"></canvas></article>
+      </div>
+      <article class="card insight-summary">
+        <div class="card-title"><span>✦</span> LIVE ENERGY INTERPRETATION</div>
+        <div class="insight-summary-grid">
+          <div><label>BATTERY TREND</label><strong id="insightBatteryTrend">Waiting for samples…</strong></div>
+          <div><label>POWER TREND</label><strong id="insightPowerTrend">Waiting for samples…</strong></div>
+          <div><label>WORKLOAD</label><strong id="insightWorkload">Waiting for samples…</strong></div>
+          <div><label>RECOMMENDATION</label><strong id="insightRecommendation">Waiting for live telemetry…</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="page" id="page-power">
+      <article class="card">
+        <div class="card-title"><span>ϟ</span> WINDOWS PROCESS POWER ANALYSIS <em id="processMode">LIVE WINDOWS DATA</em></div>
+        <div class="process-summary">
+          <div class="metric"><label>PROCESSES ANALYZED</label><strong id="processCount">0</strong><small class="metric-note">known Windows/user workloads represented</small></div>
+          <div class="metric"><label>HIGH CONSUMPTION</label><strong id="highProcessCount">0</strong><small class="metric-note">battery-impact priority</small></div>
+          <div class="metric"><label>MEDIUM CONSUMPTION</label><strong id="mediumProcessCount">0</strong><small class="metric-note">worth monitoring</small></div>
+          <div class="metric"><label>LOW CONSUMPTION</label><strong id="lowProcessCount">0</strong><small class="metric-note">minimal estimated impact</small></div>
+        </div>
+        <div class="table-wrap process-table-wrap">
+          <table><thead><tr><th>PROCESS</th><th>CPU</th><th>MEMORY</th><th>BATTERY USE</th><th>EST. POWER</th><th>RECOMMENDATION</th></tr></thead>
+          <tbody id="powerTable"></tbody></table>
+        </div>
+        <p class="notice"><b>Important:</b> Live Windows process names, CPU and memory usage come from this laptop through the local read-only helper. Per-process battery watts are estimates allocated from the measured battery discharge rate; Windows does not expose a universal per-process watt meter.</p>
+      </article>
+    </section>
+
+    <section class="page" id="page-aoa">
+      <div class="aoa-hero">
+        <div>
+          <div class="eyebrow">ANALYSIS OF ALGORITHMS • PROJECT SHOWCASE</div>
+          <h2>Laptop Battery Usage Optimizer</h2>
+          <p>Our project combines live laptop telemetry with algorithmic decision-making to understand battery usage, rank costly workloads and recommend safer power-saving actions.</p>
+        </div>
+        <div class="aoa-badge"><strong>AOA</strong><span>Algorithm-driven<br>Battery Intelligence</span></div>
+      </div>
+
+      <div class="aoa-flow card">
+        <div class="card-title"><span>⇢</span> HOW THE SYSTEM WORKS</div>
+        <div class="flow-grid">
+          <div><b>01</b><strong>Collect</strong><span>Battery • CPU • RAM • Power • Display</span></div>
+          <div><b>02</b><strong>Process</strong><span>Validate • Normalize • Track history</span></div>
+          <div><b>03</b><strong>Analyze</strong><span>Score • Rank • Detect inefficient states</span></div>
+          <div><b>04</b><strong>Decide</strong><span>Greedy selection of useful actions</span></div>
+          <div><b>05</b><strong>Explain</strong><span>Clear recommendations with estimated saving</span></div>
+        </div>
+      </div>
+
+      <div class="aoa-grid">
+        <article class="card info">
+          <div class="card-title"><span>◆</span> PROJECT OBJECTIVES</div>
+          <ul class="clean-list">
+            <li>Continuously monitor battery and system resources.</li>
+            <li>Detect real Windows brightness and refresh-rate changes.</li>
+            <li>Visualize battery, power and workload trends smoothly.</li>
+            <li>Rank estimated power consumers from highest to lowest.</li>
+            <li>Generate explainable battery-saving recommendations.</li>
+            <li>Demonstrate algorithmic efficiency through live data.</li>
+          </ul>
+        </article>
+        <article class="card info">
+          <div class="card-title"><span>⌘</span> KEY ALGORITHMS</div>
+          <div class="algorithm-list">
+            <div><b>Greedy</b><span>Chooses the highest-value safe action first.</span></div>
+            <div><b>Sliding Window</b><span>Keeps recent samples for live trends.</span></div>
+            <div><b>Running Average</b><span>Updates power statistics without rescanning history.</span></div>
+            <div><b>Sorting / Ranking</b><span>Orders power-consuming processes.</span></div>
+            <div><b>Weighted Score</b><span>Combines live system factors into /100 efficiency.</span></div>
+            <div><b>Rule-Based Decision</b><span>Turns detected conditions into explanations.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card complexity-card">
+        <div class="card-title"><span>∑</span> ALGORITHM COMPLEXITY <em>TIME + SPACE</em></div>
+        <div class="complexity-grid">
+          <div class="complexity-item"><b>Rolling sample</b><span>O(1) amortized</span><small>O(N) space</small></div>
+          <div class="complexity-item"><b>Running average</b><span>O(1)</span><small>O(1) space</small></div>
+          <div class="complexity-item"><b>Efficiency score</b><span>O(1)</span><small>O(1) space</small></div>
+          <div class="complexity-item"><b>Greedy selection</b><span>O(A log A)</span><small>O(A) space</small></div>
+          <div class="complexity-item"><b>Power ranking</b><span>O(P log P)</span><small>O(P) space</small></div>
+          <div class="complexity-item"><b>Canvas rendering</b><span>O(N)</span><small>O(1) extra</small></div>
+        </div>
+        <p class="notice">N = retained samples • A = candidate actions • P = active processes. The project keeps history bounded so live monitoring remains responsive.</p>
+      </article>
+
+      <div class="aoa-grid three-panels">
+        <article class="card info"><div class="mini-heading"><span>✓</span> ADVANTAGES</div><ul class="clean-list"><li>Live and explainable analysis.</li><li>Efficient rolling calculations.</li><li>Clear greedy recommendations.</li><li>Useful visual dashboard for demonstration.</li></ul></article>
+        <article class="card info"><div class="mini-heading"><span>!</span> LIMITATIONS</div><ul class="clean-list"><li>Windows telemetry depends on supported hardware fields.</li><li>Per-process watts are estimates.</li><li>What-If controls do not modify Windows settings.</li><li>Some GPU fields may show N/A.</li></ul></article>
+        <article class="card info"><div class="mini-heading"><span>↗</span> FUTURE SCOPE</div><ul class="clean-list"><li>Long-term battery history.</li><li>ML-based runtime prediction.</li><li>More vendor-specific telemetry.</li><li>Optional automatic optimization.</li></ul></article>
+      </div>
+
+      <section class="team-section">
+        <article class="card team-card team-showcase">
+          <div class="card-title"><span>👤</span> PROJECT BY <em>AOA PROJECT</em></div>
+          <div class="team-grid" style="grid-template-columns:1fr;">
+            <div class="team-member">
+              <div class="team-avatar">TJ</div>
+              <div>
+                <h3>Tinkle Jain</h3>
+                <p><b>Project Developer</b></p>
+                <span>AOA • Windows Laptop Battery Optimizer</span>
+              </div>
+            </div>
+          </div>
+          <div class="team-note">Analysis of Algorithms • Intelligent Laptop Battery &amp; Performance Monitoring • Live Windows Telemetry</div>
+        </article>
+      </section>
+</section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
